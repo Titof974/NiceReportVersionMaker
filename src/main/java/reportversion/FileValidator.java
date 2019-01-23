@@ -1,0 +1,47 @@
+package reportversion;
+
+import utils.HashUtils;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
+
+public class FileValidator {
+    private String path;
+    private String hash;
+    private Boolean validate;
+
+    public FileValidator(String path, String hash){
+        this.path = path;
+        this.hash = hash;
+        this.validate = false;
+    }
+
+    public FileValidator(Path path, String hash) {
+        this(path.toString(), hash);
+    }
+
+    public FileValidator(Path path) throws IOException, NoSuchAlgorithmException {
+        this(path.toString(), HashUtils.generateSha256(path));
+    }
+
+    public String getPath(){
+        return this.path;
+    }
+
+    public String getHash(){
+        return this.hash;
+    }
+
+    public Boolean getValidate(){
+        return this.validate;
+    }
+
+    public boolean check() throws IOException, NoSuchAlgorithmException {
+        Path _path = Paths.get(path);
+        this.validate = HashUtils.generateSha256(_path).equals(this.hash);
+        return this.validate;
+    }
+
+}
