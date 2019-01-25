@@ -34,6 +34,10 @@ public class FileValidator {
         return this.hash;
     }
 
+    public String getShortHash() {
+        return this.getHash().substring(Math.max(this.getHash().length() - 6, 0));
+    }
+
     public Boolean getValidate(){
         return this.validate;
     }

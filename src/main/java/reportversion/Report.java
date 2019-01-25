@@ -16,22 +16,29 @@ import com.google.gson.Gson;
 public class Report {
 
     private String name;
-    private String path;
+    private transient String path;
     private String includeRegex;
     private String excludeRegex;
+    private String version;
     private Date createdAt;
     private List<FileValidator> files;
 
-    public Report(String name, String path, String includeRegex, String excludeRegex, Date createdAt) {
+    public Report(String path, String name, String version, String includeRegex, String excludeRegex, Date createdAt) {
         this.name = name;
         this.path = path;
+        this.version = version;
         this.includeRegex = includeRegex;
         this.excludeRegex = excludeRegex;
         this.createdAt = (createdAt == null) ? new Date() : createdAt;
     }
 
-    public Report(String name, String path, String includeRegex, String excludeRegex){
-        this(name, path, includeRegex, excludeRegex, null);
+    public Report(String path, String name, String version, String includeRegex, String excludeRegex){
+        this(path, name, version, includeRegex, excludeRegex, null);
+    }
+
+    public Report setPath(String path) {
+        this.path = path;
+        return this;
     }
 
     public void generate() throws IOException, NoSuchAlgorithmException {
@@ -57,6 +64,7 @@ public class Report {
     public String toString() {
         StringBuilder string = new StringBuilder();
         string.append(String.format("Report : %s\n", this.name));
+        string.append(String.format("Version : %s\n", this.version));
         string.append(String.format("Created at : %s\n", this.createdAt));
         string.append(String.format("Path: %s\n", this.path));
         string.append(String.format("IncludeRegex: %s\n", this.includeRegex));
@@ -80,11 +88,46 @@ public class Report {
         return gson.fromJson(json, Report.class);
     }
 
+    public String toCSV() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format("Report : %s\n", this.name));
+        stringBuilder.append(String.format("Version : %s\n", this.version));
+        stringBuilder.append(String.format("Created at : %s\n", this.createdAt));
+        stringBuilder.append("\n");
+        stringBuilder.append("File, Version\n");
+        this.getFiles().stream().forEach(f -> stringBuilder.append(String.format("%s, %s\n", f.getPath(), f.getShortHash())));
+        return stringBuilder.toString();
+    }
+
+    public List<FileValidator> getFiles(){
+        return this.files;
+    }
+
     public String cryptedJson() throws Exception {
         return CryptoUtils.crypt(this.toJson());
     }
 
     public static Report decryptedJson(String cryptedJson) throws Exception {
         return Report.fromJson(CryptoUtils.decrypt(cryptedJson));
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public Date getCreatedAt(){
+        return this.createdAt;
+    }
+
+    public String getIncludeRegex(){
+        return this.includeRegex;
+    }
+
+    public String getExcludeRegex(){
+        return this.excludeRegex;
+    }
+
+    public String getVersion(){
+        return this.version;
     }
 }
