@@ -61,6 +61,14 @@ public class Report {
         return this.files.stream().allMatch(file -> file.getValidate());
     }
 
+    public String listFiles() {
+        StringBuilder string = new StringBuilder();
+        for (FileValidator fileValidator : this.files) {
+            string.append(String.format("%s - %s\n", fileValidator.getPath(), fileValidator.getHash()));
+        }
+        return string.toString();
+    }
+
     public String toString() {
         StringBuilder string = new StringBuilder();
         string.append(String.format("Report : %s\n", this.name));

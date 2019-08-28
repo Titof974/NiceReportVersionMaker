@@ -42,6 +42,7 @@ public class gui extends JDialog {
 
         setContentPane(contentPane);
         setModal(true);
+        setTitle("JC Integrity Report Tool");
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
